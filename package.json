@@ -1,0 +1,25 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "Rebit game",
+  "main": "index.js",
+  "dependencies": {
+    "console": "^0.7.2",
+    "express": "^4.17.1",
+    "mathjs": "^9.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NarekKarapetyan97/game.git"
+  },
+  "author": "Narek Karpetyan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NarekKarapetyan97/game/issues"
+  },
+  "homepage": "https://github.com/NarekKarapetyan97/game#readme"
+}
