@@ -1,3 +1,5 @@
+//const { sum } = require("mathjs");
+
 const forest = [];
 
 for (let i = 0; i < 10; i++) {
@@ -17,9 +19,15 @@ forest[x][y] = "R";
 
 // initRebbit();
 
-for (let wall = 0; wall < (forest.length * forest.length) / 10; wall++) {
-  return fox;
+function initWall() {
+  let Xw = getRandomNumber(0, 9);
+  let Yw = getRandomNumber(0, 9);
+
+  if()
+  let wall = (forest[Xw][Yw] = "W");
+  //console.log(sum(range(0, (forest.length * forest.length) / 10)));
 }
-console.log(fox);
+
+initWall();
 
 console.log(forest);
