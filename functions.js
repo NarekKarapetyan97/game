@@ -1,3 +1,7 @@
+const RABBIT = "R"
+const TREE = "T"
+const FREE = ""
+
 function getRandomNumber(min, max) {
   return Math.ceil(Math.random() * (max - min) + min);
 }
@@ -5,19 +9,34 @@ function getRandomNumber(min, max) {
 document.addEventListener("keydown", logKey);
 
 ///////////////////////////////////////////////
-function initRebbit() {
+function initRabbit() {
   x = getRandomNumber(0, 9);
   y = getRandomNumber(0, 9);
   forest[x][y] = "R";
   console.log(forest);
 }
 
-function initTree() {
-  for (let i = 0; i < percent; i++) {
-    let Wx = getRandomNumber(0, 9);
-    let Wy = getRandomNumber(0, 9);
-    if (forest[Wx][Wy] === "") forest[Wx][Wy] = "T";
-    else i = i - 1;
+const getRandomFreeCell = () => {
+    const x = getRandomNumber(0, 9);
+    const y = getRandomNumber(0, 9);
+    if (forest[x][y] === FREE) {
+        return [x, y]
+    }
+
+    return getRandomFreeCell()
+}
+
+const initCell = (ID) => () => {
+    const [x, y] = getRandomFreeCell()
+    forest[x][y] = ID;
+}
+
+const initTree = initCell(TREE)
+const initWolf = initCell(WOLF)
+
+function initTrees(count) {
+  for (let i = 0; i < count; i++) {
+    initTree()
   }
 }
 
@@ -27,7 +46,7 @@ function initWolf() {
     let Fy = getRandomNumber(0, 9);
     if (forest[Fx][Fy] === "") {
       WolfArrOld.push([Fx, Fy]);
-      forest[Fx][Fy] = "W";
+      forest[Fx][Fy] = WOLF;
     } else i = i - 1;
   }
 }
@@ -41,12 +60,7 @@ function initNest() {
   } else {
     initNest();
   }
-}
-
-///////////////////////////////////////////////
-function checkFieldForRabbit(x, y) {
-  if (forest[x][y] === "T") {
-    return;
+}count
   } else if (forest[x][y] === "()") {
     console.log("You Win");
     document.removeEventListener("keydown", logKey);
@@ -59,7 +73,7 @@ function checkFieldForRabbit(x, y) {
 }
 
 ///////////////////////////////////////////////
-function rebbitRun(a, b) {
+const rebbitRun = (a) => (b) => {
   forest[x][y] = "";
   forest[a][b] = "R";
   x = a;
@@ -68,6 +82,16 @@ function rebbitRun(a, b) {
 
   console.log(forest);
 }
+
+const calcDistance = (a, b) => {
+    const [x, y] = a
+    const [Fx, Fy] = b
+    return Math.sqrt(Math.pow(Rx - (Fx + 1), 2) + Math.pow(Ry - Fy, 2));
+}
+
+calcDistance(rabbitCoord)
+
+possibleMoves.map()
 
 function shortestDistance(Rx, Ry, Fx, Fy) {
   let d1 = Math.sqrt(Math.pow(Rx - (Fx + 1), 2) + Math.pow(Ry - Fy, 2));
@@ -91,10 +115,11 @@ function shortestDistance(Rx, Ry, Fx, Fy) {
 
 function fillWolfNewPosition() {
   for (let i = 0; i < WolfArrOld.length; i++) {
+      const x = forest[WolfArrNew[i][0]][WolfArrNew[i][1]]
     if (
-      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "T" ||
-      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "W" ||
-      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "()"
+      x === "T" ||
+      x === "W" ||
+      x === "()"
     ) {
       continue;
     } else if (forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "R") {
