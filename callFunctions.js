@@ -1,0 +1,4 @@
+initRebbit();
+initTree();
+initWolf();
+initNest();
