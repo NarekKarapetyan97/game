@@ -4,19 +4,151 @@ function getRandomNumber(min, max) {
 
 document.addEventListener("keydown", logKey);
 
+const Rabbit = "R";
+const Wolf = "W";
+const Tree = "T";
+const Nest = "(nests)";
+const Free = "";
+
 ///////////////////////////////////////////////
-function initRebbit() {
-  x = getRandomNumber(0, 9);
-  y = getRandomNumber(0, 9);
-  forest[x][y] = "R";
+
+// function randomCoordinateX(Rx) {
+//   Rx = getRandomNumber(0, m);
+//   return Rx;
+// }
+// function randomCoordinateY(Ry) {
+//   Ry = getRandomNumber(0, n);
+//   return Ry;
+// }
+
+// function randomCoordinates() {
+//   x = randomCoordinateX();
+//   y = randomCoordinateY();
+//   const obj = { x, y };
+//   return obj;
+// }
+function randomCoordinates() {
+  x = getRandomNumber(0, m);
+  y = getRandomNumber(0, n);
+
+  if (forest[x][y] === Free) {
+    return [x, y];
+  } else {
+    return randomCoordinates();
+  }
+}
+
+// function rabbitPosition(){
+//     const freeCell = randomCoordinates();
+//   const coordtinateX = forest[freeCell.x][0]
+//   const coordtinateX = forest[0][freeCell.y]
+
+// }
+
+function initialiseRabbit() {
+  const [x, y] = randomCoordinates();
+  forest[x][y] = Rabbit;
+
+  const rabbitPosition = { x, y };
+  //rabbitRun(Rx, Ry);
+  console.log(forest);
+  return rabbitPosition;
+}
+
+function rabbitPosition() {
+  const initRabbit = initialiseRabbit();
+  const Rx = initRabbit.Rfx;
+  const Ry = initRabbit.Rfy;
+  const rabbitObjPosition = { Rx, Ry };
+  rabbitRun(Rx, Ry);
+  return rabbitObjPosition;
+}
+
+function rabbitRun(a, b) {
+  const position = rabbitPosition();
+  forest[position.Rx][position.Ry] = Free;
+  forest[a][b] = Rabbit;
+  position.Rx = a;
+  position.Ry = b;
+
+  //   const initRabbit = initialiseRabbit();
+  //   forest[initRabbit.Rx][initRabbit.Ry] = Free;
+  //   forest[a][b] = Rabbit;
+  //   initRabbit.Rx = a;
+  //   initRabbit.Ry = b;
+  //   //   WolfRun(a, b);
+  //   forest[i][j] = Free;
+  //   forest[a][b] = Rabbit;
+  //   i = a;
+  //   j = b;
+
   console.log(forest);
 }
+
+function initialiseNest() {
+  const freeCell = randomCoordinates();
+  forest[freeCell.x][freeCell.y] = Nest;
+}
+
+// function freeCell() {
+//   if (forest[i][j] === Free) {
+//     randomCoordinates();
+//   } else {
+//     freeCell();
+//   }
+// }
+
+// function initialiseRabbit() {
+//   const free = freeCell();
+//   forest[free.x][free.y] = Rabbit;
+//   //   const rabbitCoordinates = randomCoordinates();
+//   //   initRabbit(rabbitCoordinates.x, rabbitCoordinates.y);
+// }
+
+// function initRabbit(Rx, Ry) {
+//   //   let rabbitCell = forest[Rx][Ry];
+//   //   rabbitCell = Rabbit;
+//   if (forest[Rx][Ry] === Free) {
+//     forest[Rx][Ry] = Rabbit;
+//   } else {
+//     initialiseRabbit;
+//   }
+//   console.log(forest);
+// }
+
+// function initialiseNest() {
+//   const nestCoordinates = randomCoordinates();
+//   initNest(nestCoordinates.x, nestCoordinates.y);
+// }
+
+// function initNest(Nx, Ny) {
+//   const nestCell = forest[Nx][Ny];
+//   if (nestCell === Free) {
+//     //nestCell = Nest;
+//     //   if (forest[Nx][Ny] === Free) {
+//     forest[Nx][Ny] = Nest;
+//     return console.log(nestCell);
+//   } else {
+//     initialiseNest();
+//   }
+// }
+
+// function initialiseNest() {
+//     const [x, y] = randomCoordinates();
+
+//     if (forest[x][y] === Free) {
+//       forest[x][y] = Nest;
+//     } else {
+//       initialiseNest();
+//     }
+//   }
 
 function initTree() {
   for (let i = 0; i < percent; i++) {
     let Wx = getRandomNumber(0, 9);
     let Wy = getRandomNumber(0, 9);
-    if (forest[Wx][Wy] === "") forest[Wx][Wy] = "T";
+
+    if (forest[Wx][Wy] === Free) forest[Wx][Wy] = Tree;
     else i = i - 1;
   }
 }
@@ -25,49 +157,29 @@ function initWolf() {
   for (let i = 0; i < percent; i++) {
     let Fx = getRandomNumber(0, 9);
     let Fy = getRandomNumber(0, 9);
-    if (forest[Fx][Fy] === "") {
+    if (forest[Fx][Fy] === Free) {
       WolfArrOld.push([Fx, Fy]);
-      forest[Fx][Fy] = "W";
+      forest[Fx][Fy] = Wolf;
     } else i = i - 1;
-  }
-}
-
-function initNest() {
-  let Nx = getRandomNumber(0, 9);
-  let Ny = getRandomNumber(0, 9);
-  if (forest[Nx][Ny] === "") {
-    forest[Nx][Ny] = "()";
-    return;
-  } else {
-    initNest();
   }
 }
 
 ///////////////////////////////////////////////
 function checkFieldForRabbit(x, y) {
-  if (forest[x][y] === "T") {
+  if (forest[x][y] === Tree) {
     return;
-  } else if (forest[x][y] === "()") {
+  } else if (forest[x][y] === Nest) {
     console.log("You Win");
     document.removeEventListener("keydown", logKey);
-  } else if (forest[x][y] === "W") {
+  } else if (forest[x][y] === Wolf) {
     console.log("Game Over");
     document.removeEventListener("keydown", logKey);
   } else {
-    rebbitRun(x, y);
+    rabbitRun(x, y);
   }
 }
 
 ///////////////////////////////////////////////
-function rebbitRun(a, b) {
-  forest[x][y] = "";
-  forest[a][b] = "R";
-  x = a;
-  y = b;
-  WolfRun(a, b);
-
-  console.log(forest);
-}
 
 function shortestDistance(Rx, Ry, Fx, Fy) {
   let d1 = Math.sqrt(Math.pow(Rx - (Fx + 1), 2) + Math.pow(Ry - Fy, 2));
@@ -92,18 +204,18 @@ function shortestDistance(Rx, Ry, Fx, Fy) {
 function fillWolfNewPosition() {
   for (let i = 0; i < WolfArrOld.length; i++) {
     if (
-      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "T" ||
-      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "W" ||
-      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "()"
+      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === Tree ||
+      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === Wolf ||
+      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === Nest
     ) {
       continue;
-    } else if (forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === "R") {
-      forest[WolfArrOld[i][0]][WolfArrOld[i][1]] = "";
+    } else if (forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === Rabbit) {
+      forest[WolfArrOld[i][0]][WolfArrOld[i][1]] = Free;
       document.removeEventListener("keydown", logKey);
       console.log("Game Over");
     } else {
-      forest[WolfArrOld[i][0]][WolfArrOld[i][1]] = "";
-      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] = "W";
+      forest[WolfArrOld[i][0]][WolfArrOld[i][1]] = Free;
+      forest[WolfArrNew[i][0]][WolfArrNew[i][1]] = Wolf;
     }
   }
   WolfArrOld = WolfArrNew;
