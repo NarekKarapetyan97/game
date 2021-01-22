@@ -9,6 +9,7 @@ const Wolf = "W";
 const Tree = "T";
 const Nest = "(nests)";
 const Free = "";
+let rabbitPosition = null;
 
 ///////////////////////////////////////////////
 
@@ -27,9 +28,16 @@ const Free = "";
 //   const obj = { x, y };
 //   return obj;
 // }
+// function rabbitPosition(){
+//     const freeCell = randomCoordinates();
+//   const coordtinateX = forest[freeCell.x][0]
+//   const coordtinateX = forest[0][freeCell.y]
+
+// }
+
 function randomCoordinates() {
-  x = getRandomNumber(0, m);
-  y = getRandomNumber(0, n);
+  const x = getRandomNumber(0, m);
+  const y = getRandomNumber(0, n);
 
   if (forest[x][y] === Free) {
     return [x, y];
@@ -38,57 +46,55 @@ function randomCoordinates() {
   }
 }
 
-// function rabbitPosition(){
-//     const freeCell = randomCoordinates();
-//   const coordtinateX = forest[freeCell.x][0]
-//   const coordtinateX = forest[0][freeCell.y]
-
-// }
-
-function initialiseRabbit() {
+function initialiseNest() {
   const [x, y] = randomCoordinates();
-  forest[x][y] = Rabbit;
-
-  const rabbitPosition = { x, y };
-  //rabbitRun(Rx, Ry);
-  console.log(forest);
-  return rabbitPosition;
+  forest[x][y] = Nest;
 }
 
-function rabbitPosition() {
-  const initRabbit = initialiseRabbit();
-  const Rx = initRabbit.Rfx;
-  const Ry = initRabbit.Rfy;
-  const rabbitObjPosition = { Rx, Ry };
-  rabbitRun(Rx, Ry);
-  return rabbitObjPosition;
+function initialiseRabbit() {
+  if (rabbitPosition) {
+    return rabbitPosition;
+  }
+  const [x, y] = randomCoordinates();
+  forest[x][y] = Rabbit;
+  console.log(forest);
+  rabbitPosition = [x, y];
 }
 
 function rabbitRun(a, b) {
-  const position = rabbitPosition();
-  forest[position.Rx][position.Ry] = Free;
+  let [x, y] = initialiseRabbit();
+  let rabbitObj = { x, y };
+  let Rx = rabbitObj.x;
+  let Ry = rabbitObj.y;
+  forest[x][y] = Free;
   forest[a][b] = Rabbit;
-  position.Rx = a;
-  position.Ry = b;
 
-  //   const initRabbit = initialiseRabbit();
-  //   forest[initRabbit.Rx][initRabbit.Ry] = Free;
-  //   forest[a][b] = Rabbit;
-  //   initRabbit.Rx = a;
-  //   initRabbit.Ry = b;
-  //   //   WolfRun(a, b);
-  //   forest[i][j] = Free;
-  //   forest[a][b] = Rabbit;
-  //   i = a;
-  //   j = b;
-
+  x = a;
+  y = b;
   console.log(forest);
+  console.log(forest[(x, y)]);
+  return rabbitObj;
+}
+function ArrowUp() {
+  let r = rabbitRun();
+  let x = r.x;
+  if (x === 0) {
+    a = forest.length - 1;
+  } else {
+    x = x - 1;
+  }
+  rabbitRun(x, y);
+  console.log(x);
 }
 
-function initialiseNest() {
-  const freeCell = randomCoordinates();
-  forest[freeCell.x][freeCell.y] = Nest;
-}
+// function rabbitPosition() {
+//   const initRabbit = initialiseRabbit();
+//   const Rx = initRabbit.Rfx;
+//   const Ry = initRabbit.Rfy;
+//   const rabbitObjPosition = { Rx, Ry };
+//   rabbitRun(Rx, Ry);
+//   return rabbitObjPosition;
+// }
 
 // function freeCell() {
 //   if (forest[i][j] === Free) {
@@ -230,15 +236,6 @@ function WolfRun(Rx, Ry) {
     WolfArrNew[i] = newCordinate;
   }
   fillWolfNewPosition();
-}
-
-function ArrowUp() {
-  if (x === 0) {
-    a = forest.length - 1;
-  } else {
-    a = x - 1;
-  }
-  checkFieldForRabbit(a, y);
 }
 
 function ArrowDown() {
