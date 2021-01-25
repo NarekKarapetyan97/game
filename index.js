@@ -10,11 +10,6 @@ for (let i = 0; i < m; i++) {
   }
 }
 
-const Rabbit = "R";
-const Wolf = "W";
-const Tree = "T";
-const Nest = "(nests)";
-const Free = "";
 let percent = (n * m) / 10;
 let WolfArrOld = new Array();
 let WolfArrNew = new Array();

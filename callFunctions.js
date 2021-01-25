@@ -1,4 +1,5 @@
 initialiseRabbit();
 initialiseNest();
-initialiseTree();
-initialiseWolf();
+initialiseTrees();
+initialiseWolfs();
+// drawBoard();

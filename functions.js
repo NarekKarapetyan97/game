@@ -1,10 +1,15 @@
+const Rabbit = "R";
+const Wolf = "W";
+const Tree = "T";
+const Nest = "(nests)";
+const Free = "";
 function getRandomNumber(min, max) {
   return Math.ceil(Math.random() * (max - min) + min);
 }
 
 document.addEventListener("keydown", logKey);
 
-function searchPosition(element) {
+function searchPositions(element) {
   const positions = new Array();
   for (let i = 0; i < m; i++) {
     for (let j = 0; j < n; j++) {
@@ -13,51 +18,70 @@ function searchPosition(element) {
       }
     }
   }
-  if (positions.length === 0) {
-    positions.push(false);
-  }
+
   return positions;
 }
 
-function randomCoordinates() {
+function getRndFreeCoordinat() {
   const x = getRandomNumber(0, m - 1);
   const y = getRandomNumber(0, n - 1);
 
-  if (forest[x][y] === Free) {
-    return [x, y];
-  } else {
-    return randomCoordinates();
-  }
+  return forest[x][y] === Free ? [x, y] : getRndFreeCoordinat();
 }
 
-function initialiseNest() {
-  const [x, y] = randomCoordinates();
-  forest[x][y] = Nest;
-}
-
-function initialiseRabbit() {
-  const [x, y] = randomCoordinates();
-  forest[x][y] = Rabbit;
+const drawBoard = () => {
   console.log(forest);
+};
+
+const initObjectAtRndPosition = (ID) => () => {
+  const [x, y] = getRndFreeCoordinat();
+  forest[x][y] = ID;
+  return [x, y];
+};
+
+const initialiseNest = initObjectAtRndPosition(Nest);
+const initialiseRabbit = initObjectAtRndPosition(Rabbit);
+const initialiseTree = initObjectAtRndPosition(Tree);
+const initialiseWolf = initObjectAtRndPosition(Wolf);
+
+const doNTimes = (N) => (fn) => {
+  let i = null;
+  const results = [];
+  while (i < N) {
+    results.push(fn());
+    i++;
+  }
+  return results;
+};
+
+function initialiseTrees() {
+  console.log(forest);
+  doNTimes(percent)(initialiseTree);
+}
+
+function initialiseWolfs() {
+  WolfArrOld = doNTimes(percent)(initialiseWolf);
 }
 
 function rabbitRun(a, b, x, y) {
-  if (stop(a, b, Tree) === true) {
-    return;
+  if (elementExists(a, b, Tree)) {
+    return [a, b, x, y];
   }
   forest[x][y] = Free;
   forest[a][b] = Rabbit;
-  wolfRun();
-  console.log(forest);
-  WinOrLose();
+  return [a, b, x, y];
+}
+
+function elementExists(x, y, element) {
+  return forest[x][y] === element;
 }
 
 function WinOrLose() {
-  if (searchPosition(Nest)[0] === false) {
+  if (searchPositions(Nest).length === 0) {
     document.removeEventListener("keydown", logKey);
     console.log("You Win");
     return;
-  } else if (searchPosition(Rabbit)[0] === false) {
+  } else if (searchPositions(Rabbit).length === 0) {
     document.removeEventListener("keydown", logKey);
     console.log("Game Over");
     return;
@@ -66,31 +90,8 @@ function WinOrLose() {
   }
 }
 
-function initialiseTree() {
-  let i = null;
-  while (i < percent) {
-    let [x, y] = randomCoordinates();
-    forest[x][y] = Tree;
-    i++;
-  }
-}
-
-function stop(x, y, element) {
-  return forest[x][y] === element;
-}
-
-function initialiseWolf() {
-  let l = null;
-  while (l < percent) {
-    let [x, y] = randomCoordinates();
-    forest[x][y] = Wolf;
-    WolfArrOld.push([x, y]);
-    l++;
-  }
-}
-
 function rabbitPosition() {
-  return searchPosition(Rabbit)[0];
+  return searchPositions(Rabbit)[0];
 }
 
 function distanceFormula(Wx, Wy) {
@@ -103,7 +104,7 @@ function wolfRun() {
     let Wx = WolfArrOld[i][0];
     let Wy = WolfArrOld[i][1];
     let [a, b] = findeMinDistance(Wx, Wy);
-    if (stop(a, b, Wolf) === true) {
+    if (elementExists(a, b, Wolf)) {
       WolfArrNew[i] = [Wx, Wy];
     } else {
       WolfArrNew[i] = [a, b];
@@ -139,8 +140,8 @@ function fillWolfNewPosition() {
       forest[WolfArrOld[i][0]][WolfArrOld[i][1]] = Free;
       document.removeEventListener("keydown", logKey);
       console.log("Game Over");
-    } else if (forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === Tree) {
-      continue;
+    } else if (forest[WolfArrNew[i][0]][WolfArrNew[i][1]] === Nest) {
+      return;
     } else {
       forest[WolfArrOld[i][0]][WolfArrOld[i][1]] = Free;
       forest[WolfArrNew[i][0]][WolfArrNew[i][1]] = Wolf;
@@ -151,58 +152,62 @@ function fillWolfNewPosition() {
 }
 
 //////////////////////////////////////////
-function ArrowUp() {
-  let [x, y] = searchPosition(Rabbit)[0];
-  let a = x;
-  let b = y;
-  if (x === 0) {
-    a = forest.length - 1;
-  } else {
-    a = x - 1;
-  }
-  rabbitRun(a, b, x, y);
-}
 
-function ArrowDown() {
-  let [x, y] = searchPosition(Rabbit)[0];
-  let a = x;
-  let b = y;
+function ArrowDown(a, b, x, y) {
   if (x === forest.length - 1) {
     a = 0;
   } else {
     a = x + 1;
   }
-  rabbitRun(a, b, x, y);
+  return [a, b, x, y];
 }
-function ArrowRight() {
-  let [x, y] = searchPosition(Rabbit)[0];
-  let a = x;
-  let b = y;
+function ArrowRight(a, b, x, y) {
   if (y === forest[x].length - 1) {
     b = 0;
   } else {
     b = y + 1;
   }
-  rabbitRun(a, b, x, y);
+  return [a, b, x, y];
 }
 
-function ArrowLeft() {
-  let [x, y] = searchPosition(Rabbit)[0];
-  let a = x;
-  let b = y;
+function ArrowLeft(a, b, x, y) {
   if (y === 0) {
     b = forest.length - 1;
   } else {
     b = y - 1;
   }
-  rabbitRun(a, b, x, y);
+  return [a, b, x, y];
+}
+
+function ArrowUp(a, b, x, y) {
+  if (x === 0) {
+    a = forest.length - 1;
+  } else {
+    a = x - 1;
+  }
+  console.log([x, a]);
+  return [a, b, x, y];
 }
 
 function logKey(e) {
-  if (e.code === "ArrowUp") ArrowUp();
-  else if (e.code === "ArrowDown") ArrowDown();
-  else if (e.code === "ArrowRight") ArrowRight();
-  else if (e.code === "ArrowLeft") ArrowLeft();
+  let [x, y] = searchPositions(Rabbit)[0];
+  let a = x;
+  let b = y;
+  let result;
+
+  if (e.code === "ArrowUp") {
+    result = ArrowUp(a, b, x, y);
+  } else if (e.code === "ArrowDown") {
+    result = ArrowDown(a, b, x, y);
+  } else if (e.code === "ArrowRight") {
+    result = ArrowRight(a, b, x, y);
+  } else if (e.code === "ArrowLeft") {
+    result = ArrowLeft(a, b, x, y);
+  }
+  rabbitRun(...result);
+  drawBoard();
+  wolfRun();
+  WinOrLose();
 }
 
 ///////////////////////////////////////////////
